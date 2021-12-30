@@ -1,30 +1,14 @@
-# DDNS
+# Route53 DDNS
 
-Usage:
+You will need an IAM user with Serverless Framework permissions to deploy the stack.
 
-```bash
-# install serverless framework binary
-curl -o- -L https://slss.io/install | bash
+You should also change your docker image builder in the `build.sh` file if you don't use `docker`.
 
-# change these variables on update_route53.py
-# HOSTED_ZONE_NAME = "indigena.xyz"
-# RECORD_NAME = "bisnaga.indigena.xyz"
-# RECORD_TYPE = "A"
-# RECORD_TTL = 300
+The stack will be deployed during the docker build, and the entrypoint is a loop that updates the DNS every 5 minutes.
 
-# deploy the lambda funcion on your aws account
-# be sure your aws cli is properly configured before doing this. to do this run `aws configure`
-serverless deploy | grep -A1 endpoints: 
-# endpoints:
-#   GET - https://zf8p10v2yi.execute-api.us-east-1.amazonaws.com/
+## Configuration
 
-# send a get request to the endpoint to update the DNS record with your ip!!
-curl https://zf8p10v2yi.execute-api.us-east-1.amazonaws.com/
+Update the `update_route53.py` file with your DNS and secret.
 
-# OR run a background job to update it constantly:
-while true
-do
-    wget -qO- https://zf8p10v2yi.execute-api.us-east-1.amazonaws.com/
-    sleep 1h
-done
-```
+Add the same secret to the `entrypoint.sh`
+

@@ -1,14 +1,15 @@
 import json
 import boto3
+import base64
 
 
 client = boto3.client("route53")
 
-HOSTED_ZONE_NAME = "indigena.xyz"
-RECORD_NAME = "bisnaga.indigena.xyz"
+HOSTED_ZONE_NAME = ""
+RECORD_NAME = ""
 RECORD_TYPE = "A"
 RECORD_TTL = 300
-
+SECRET = ""
 
 def get_hosted_zone_id(name):
     name = f"{name}."
@@ -21,7 +22,20 @@ def get_hosted_zone_id(name):
 def main(event, context):
     try:
         id_ = get_hosted_zone_id(HOSTED_ZONE_NAME)
+
         print(event)
+
+        if (event["isBase64Encoded"]):
+            body = base64.b64decode(event["body"])
+        else:
+            body = event["body"]
+
+        data = json.loads(body)
+        print(data)
+
+        if (data["secret"] != SECRET):
+            raise Exception("Secret string does not match")
+
         ip = event["requestContext"]["http"]["sourceIp"]
         record = {
             "TTL": RECORD_TTL,
